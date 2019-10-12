@@ -10,14 +10,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
             android:hint="@string/trip_name"
             app:layout_constraintEnd_toEndOf="parent"
@@ -29,6 +29,122 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:id="@+id/dateTimeLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="@+id/directionLayout"
+            app:layout_constraintStart_toStartOf="@+id/directionLayout"
+            app:layout_constraintTop_toBottomOf="@+id/directionLayout">
+
+            <TextView
+                android:id="@+id/textViewDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_event_black_24dp"
+                android:padding="4dp"
+                android:text="@string/date" />
+
+            <TextView
+                android:id="@+id/textViewTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_access_time_black_24dp"
+                android:padding="4dp"
+                android:text="@string/time" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/directionLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayout_name"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayout_name"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout_name">
+
+            <TextView
+                android:id="@+id/textViewFrom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_search_black_24dp"
+                android:gravity="center|start"
+                android:padding="4dp"
+                android:text="@string/from" />
+
+            <TextView
+                android:id="@+id/textViewTo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_search_black_24dp"
+                android:gravity="center|start"
+                android:padding="4dp"
+                android:text="@string/to" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/typeLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            app:layout_constraintEnd_toEndOf="@+id/dateTimeLayout"
+            app:layout_constraintStart_toStartOf="@+id/dateTimeLayout"
+            app:layout_constraintTop_toBottomOf="@+id/dateTimeLayout">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight=".5"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/type" />
+
+            <RadioGroup
+                android:layout_width="0dp"
+                android:id="@+id/radioGroupType"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:layout_weight="2.5"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                android:weightSum="2">
+
+
+                <RadioButton
+                    android:id="@+id/radioOneDirection"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/one_direction" />
+
+                <RadioButton
+                    android:id="@+id/radioRoundTrip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/round_trip" />
+            </RadioGroup>
+
+
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout_description"
@@ -37,70 +153,19 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:hint="@string/trip_description"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayout_name"
-            app:layout_constraintStart_toStartOf="@+id/textInputLayout_name"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout_name">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/typeLayout"
+            app:layout_constraintStart_toStartOf="@+id/typeLayout"
+            app:layout_constraintTop_toBottomOf="@+id/typeLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textViewFrom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/from"
-            app:layout_constraintStart_toStartOf="@+id/textInputLayout_description"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout_description" />
 
-        <TextView
-            android:id="@+id/textViewTo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:text="@string/to"
-            app:layout_constraintStart_toEndOf="@+id/textViewFrom"
-            app:layout_constraintTop_toTopOf="@+id/textViewFrom" />
-
-        <TextView
-            android:id="@+id/textViewDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:text="@string/date"
-            app:layout_constraintStart_toStartOf="@+id/textViewFrom"
-            app:layout_constraintTop_toBottomOf="@+id/textViewFrom" />
-
-        <TextView
-            android:id="@+id/textViewTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:text="@string/time"
-            app:layout_constraintStart_toEndOf="@+id/textViewDate"
-            app:layout_constraintTop_toTopOf="@+id/textViewDate" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="8dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewDate">
-
-            <fragment
-                android:id="@+id/autocomplete_fragment_from"
-                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
