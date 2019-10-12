@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "128727815765",
+    "firebase_url": "https://trip-planner-255702.firebaseio.com",
+    "project_id": "trip-planner-255702",
+    "storage_bucket": "trip-planner-255702.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128727815765:android:91acbe8155969bc9b2a6dc",
+        "android_client_info": {
+          "package_name": "com.waleed.tripplanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "128727815765-s3mgu60p05mcu2s2vf278m17j7276c3v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.waleed.tripplanner",
+            "certificate_hash": "79f7d38af1b26e3aa922ab7f6839185c060c6892"
+          }
+        },
+        {
+          "client_id": "128727815765-tf9mft9jstdf68pi4s1itoift4ufee13.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARqqTeRFNQA7Xt8HgV0vYrnQJ0D7l0TB4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "128727815765-tf9mft9jstdf68pi4s1itoift4ufee13.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
