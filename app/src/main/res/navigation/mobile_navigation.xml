@@ -7,32 +7,32 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.waleed.tripplanner.view.activities.ui.upComing.UpcomingTripFragment"
+        android:name="com.waleed.tripplanner.view.fragments.UpcomingTripFragment"
         android:label="@string/menu_up_coming"
         tools:layout="@layout/fragment_upcoming_trip" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.waleed.tripplanner.view.activities.ui.history.HistoryFragment"
+        android:name="com.waleed.tripplanner.view.fragments.HistoryFragment"
         android:label="@string/menu_history"
         tools:layout="@layout/fragment_history" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.waleed.tripplanner.view.activities.ui.profile.SlideshowFragment"
+        android:name="com.waleed.tripplanner.view.fragments.ProfileFragment"
         android:label="@string/menu_profile"
-        tools:layout="@layout/fragment_slideshow" />
+        tools:layout="@layout/fragment_profile" />
 
 
     <fragment
         android:id="@+id/nav_share"
-        android:name="com.waleed.tripplanner.view.activities.ui.sync.ShareFragment"
+        android:name="com.waleed.tripplanner.view.fragments.SyncFragment"
         android:label="@string/menu_sync"
-        tools:layout="@layout/fragment_share" />
+        tools:layout="@layout/fragment_sync" />
 
     <fragment
         android:id="@+id/nav_send"
-        android:name="com.waleed.tripplanner.view.activities.ui.logout.SendFragment"
+        android:name="com.waleed.tripplanner.view.fragments.LogoutFragment"
         android:label="@string/menu_logout"
-        tools:layout="@layout/fragment_send" />
+        tools:layout="@layout/fragment_logout" />
 </navigation>

@@ -1,19 +1,20 @@
-package com.waleed.tripplanner.view.activities.ui.sync;
+package com.waleed.tripplanner.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class ShareViewModel extends ViewModel {
+public class HistoryViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public ShareViewModel() {
+    public HistoryViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is share fragment");
+        mText.setValue("This is gallery fragment");
     }
 
     public LiveData<String> getText() {
         return mText;
+
     }
 }

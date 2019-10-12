@@ -1,20 +1,19 @@
-package com.waleed.tripplanner.view.activities.ui.history;
+package com.waleed.tripplanner.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class HistoryViewModel extends ViewModel {
+public class LogoutViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public HistoryViewModel() {
+    public LogoutViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is gallery fragment");
+        mText.setValue("This is send fragment");
     }
 
     public LiveData<String> getText() {
         return mText;
-
     }
 }

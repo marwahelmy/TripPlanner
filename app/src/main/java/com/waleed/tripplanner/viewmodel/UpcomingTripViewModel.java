@@ -1,4 +1,4 @@
-package com.waleed.tripplanner.view.activities.ui.upComing;
+package com.waleed.tripplanner.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
