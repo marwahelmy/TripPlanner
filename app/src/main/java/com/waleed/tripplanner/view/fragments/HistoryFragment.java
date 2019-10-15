@@ -1,6 +1,8 @@
 package com.waleed.tripplanner.view.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +16,14 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.waleed.tripplanner.R;
 import com.waleed.tripplanner.model.Trip;
+import com.waleed.tripplanner.view.activities.MapsActivity;
 import com.waleed.tripplanner.view.adapter.HistoryAdapter;
 import com.waleed.tripplanner.viewmodel.AllTripsViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,7 +34,10 @@ public class HistoryFragment extends Fragment {
 
     private AllTripsViewModel allTripsViewModel;
     private View root;
-    private HistoryAdapter  historyAdapter;
+    private HistoryAdapter historyAdapter;
+    FloatingActionButton map_fab;
+
+    List<Trip> tripsList;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -37,12 +45,22 @@ public class HistoryFragment extends Fragment {
 
         root = inflater.inflate(R.layout.fragment_history, container, false);
 
+        tripsList = new ArrayList<>();
+
+        map_fab = root.findViewById(R.id.map_fab);
+        map_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mapIntent = new Intent(getActivity(), MapsActivity.class);
+                mapIntent.putParcelableArrayListExtra("mapList", (ArrayList<? extends Parcelable>) tripsList);
+                startActivity(mapIntent);
+            }
+        });
         setupRecyclerView();
 
         updateRecyclerView();
 
         getAllTrips();
-
 
 
         return root;
@@ -73,7 +91,9 @@ public class HistoryFragment extends Fragment {
         allTripsViewModel.getMutableLiveData().observe(this, new Observer<List<Trip>>() {
             @Override
             public void onChanged(List<Trip> trips) {
-                historyAdapter.setTripList( trips);
+                tripsList = trips;
+
+                historyAdapter.setTripList(trips);
             }
         });
     }
