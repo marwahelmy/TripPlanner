@@ -12,28 +12,30 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.waleed.tripplanner.model.User;
+import com.waleed.tripplanner.viewmodel.SignViewModel;
 
 public class FireBaseRepo {
 
     private FirebaseAuth mAuth;
     User user;
     private static final String TAG = "FireBaseRepo";
+    SignViewModel signViewModel;
 
-    public FireBaseRepo() {
+    public FireBaseRepo(SignViewModel signViewModel) {
         // Initialize FireBase Auth
         mAuth = FirebaseAuth.getInstance();
+        this.signViewModel = signViewModel;
     }
 
-    public boolean login(final String email, final String password) {
+    public void login(final String email, final String password) {
 
-        final boolean[] loginState = {false};
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
+                            //  Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             // updateUI(firebaseUser);
 
@@ -51,23 +53,25 @@ public class FireBaseRepo {
 
                                 user = new User(email, name);
                             }
+                            Log.d(TAG, "signInWithEmail:success");
+                            signViewModel.sendMessage();
 
-                            loginState[0] = true;
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             //updateUI(null);
+
+                            signViewModel.sendError(task.getException().getMessage());
                         }
-                        loginState[0] = false;
+
                     }
                 });
-        return loginState[0];
+
     }
 
 
-    public boolean register(final String email, final String password) {
-
-        final boolean[] registerState = {false};
+    public void register(final String email, final String password) {
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -96,18 +100,15 @@ public class FireBaseRepo {
                                 user = new User(email, name);
                             }
 
-                            registerState[0] = true;
+                            signViewModel.sendMessage();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             // updateUI(null);
-                            registerState[0] = false;
+                            signViewModel.sendError(task.getException().getMessage());
                         }
-
                     }
                 });
-
-        return registerState[0];
     }
 
     public void updateUserData() {

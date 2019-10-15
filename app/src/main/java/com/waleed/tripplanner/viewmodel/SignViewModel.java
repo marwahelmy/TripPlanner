@@ -1,56 +1,114 @@
 package com.waleed.tripplanner.viewmodel;
 
+import android.content.Intent;
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.waleed.tripplanner.model.User;
 import com.waleed.tripplanner.repository.FireBaseRepo;
+import com.waleed.tripplanner.view.activities.LoginActivity;
+import com.waleed.tripplanner.view.activities.MainActivity;
+import com.waleed.tripplanner.view.activities.RegisterActivity;
 
 public class SignViewModel extends ViewModel {
 
     FireBaseRepo fireBaseRepo;
-    MediatorLiveData<String> liveData;
-    User user;
+    LoginActivity loginActivity;
+    RegisterActivity registerActivity;
 
 
-    boolean state;
-
-    public SignViewModel() {
-        fireBaseRepo = new FireBaseRepo();
-        liveData = new MediatorLiveData<>();
+    public SignViewModel(LoginActivity loginActivity) {
+        fireBaseRepo = new FireBaseRepo(this);
+        this.loginActivity = loginActivity;
     }
 
-    public LiveData<String> getLiveData() {
-        if (isState()) {
-            liveData.postValue("Welcome " + user.getUsername());
-        } else {
-            liveData.postValue("Login failed, please try again");
-        }
-        return liveData;
+    public SignViewModel(RegisterActivity registerActivity) {
+        fireBaseRepo = new FireBaseRepo(this);
+        this.registerActivity = registerActivity;
     }
 
     public void login(String email, String password) {
-        setState(fireBaseRepo.login(email, password));
-        Log.d("FireBaseRepo", "SignViewModel:state =" + state);
 
+        if (!email.isEmpty() && !email.equals(null)
+                && !password.isEmpty() && !password.equals(null)) {
+
+            removeEmptyDataError();
+
+            fireBaseRepo.login(email, password);
+        } else {
+            emptyDataError();
+        }
 
     }
 
-    public void register(String email, String password) {
-        state = fireBaseRepo.register(email, password);
+    public void register(String email, String password, String rePassword) {
+
+        if (!email.isEmpty() && !email.equals(null)
+                && !password.isEmpty() && !password.equals(null)
+                && !rePassword.isEmpty() && !rePassword.equals(null)) {
+
+            removeEmptyDataError();
+
+            fireBaseRepo.register(email, password);
+        } else if (!password.equals(rePassword)) {
+            passwordError();
+        } else {
+            emptyDataError();
+        }
+
     }
 
+    public void sendMessage() {
 
-    public boolean isState() {
-        return state;
+        Log.d("FireBaseRepo", "sendMessage");
+
+        if (loginActivity != null) {
+            Log.d("FireBaseRepo", "loginActivity successfully");
+
+            loginActivity.showMessage("Login successfully");
+            loginActivity.startActivity(new Intent(loginActivity, MainActivity.class));
+            loginActivity.finish();
+
+        } else if (registerActivity != null) {
+            Log.d("FireBaseRepo", " registerActivitysuccessfully");
+            registerActivity.showMessage("Register successfully");
+            registerActivity.startActivity(new Intent(registerActivity, MainActivity.class));
+            registerActivity.finish();
+        }
+
     }
 
-    public void setState(boolean state) {
-        this.state = state;
-        getLiveData();
+    public void sendError(String error) {
+
+        if (loginActivity != null) {
+            loginActivity.showMessage("Login Failed" + error);
+        } else if (registerActivity != null) {
+            registerActivity.showMessage("register Failed" + error);
+        }
+
     }
+
+    public void emptyDataError() {
+        if (loginActivity != null) {
+            loginActivity.emptyDataError();
+        } else if (registerActivity != null) {
+            registerActivity.emptyDataError();
+        }
+    }
+
+    private void passwordError() {
+        if (registerActivity != null) {
+            registerActivity.passwordError();
+        }
+    }
+
+    public void removeEmptyDataError() {
+        if (loginActivity != null) {
+            loginActivity.removeEmptyDataError();
+        } else if (registerActivity != null) {
+            registerActivity.removeEmptyDataError();
+        }
+    }
+
 
 }

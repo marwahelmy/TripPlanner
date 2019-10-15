@@ -1,15 +1,14 @@
 package com.waleed.tripplanner.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.Date;
-
 @Entity(tableName = "trips")
-public class Trip {
+public class Trip  implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
@@ -19,13 +18,14 @@ public class Trip {
     private String description;
     private String state;
 
-    private String dirFrom;
+    private String locFrom;
     private double latFrom;
     private double LngFrom;
 
-    private String dirTo;
+    private String locTo;
     private double latTo;
     private double LngTo;
+
     private String date;
     private String time;
 
@@ -34,24 +34,24 @@ public class Trip {
     public Trip() {
     }
 
-    public Trip(int id, String name, String description, String state,
-                String dirFrom, double latFrom, double lngFrom,
-                String dirTo, double latTo, double lngTo,
-                String date, String time, String type) {
+    public Trip(int id, String name, String description, String state, String locFrom, double latFrom, double lngFrom,
+                String locTo, double latTo, double lngTo, String date, String time, String type) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.state = state;
-        this.dirFrom = dirFrom;
+        this.locFrom = locFrom;
         this.latFrom = latFrom;
         LngFrom = lngFrom;
-        this.dirTo = dirTo;
+        this.locTo =locTo;
         this.latTo = latTo;
         LngTo = lngTo;
         this.date = date;
         this.time = time;
         this.type = type;
     }
+
+
 
     public int getId() {
         return id;
@@ -85,12 +85,12 @@ public class Trip {
         this.state = state;
     }
 
-    public String getDirFrom() {
-        return dirFrom;
+    public String getLocFrom() {
+        return locFrom;
     }
 
-    public void setDirFrom(String dirFrom) {
-        this.dirFrom = dirFrom;
+    public void setLocFrom(String locFrom) {
+        this.locFrom = locFrom;
     }
 
     public double getLatFrom() {
@@ -109,12 +109,12 @@ public class Trip {
         LngFrom = lngFrom;
     }
 
-    public String getDirTo() {
-        return dirTo;
+    public String getLocTo() {
+        return locTo;
     }
 
-    public void setDirTo(String dirTo) {
-        this.dirTo = dirTo;
+    public void setLocTo(String locTo) {
+        this.locTo = locTo;
     }
 
     public double getLatTo() {
@@ -156,4 +156,58 @@ public class Trip {
     public void setType(String type) {
         this.type = type;
     }
+
+
+
+    public static final Creator<Trip> CREATOR = new Creator<Trip>() {
+        @Override
+        public Trip createFromParcel(Parcel in) {
+            return new Trip(in);
+        }
+        @Override
+        public Trip[] newArray(int size) {
+            return new Trip[size];
+        }
+    };
+
+
+    protected Trip(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        description = in.readString();
+        state = in.readString();
+        locFrom = in.readString();
+        latFrom = in.readDouble();
+        LngFrom = in.readDouble();
+        locTo = in.readString();
+        latTo = in.readDouble();
+        LngTo = in.readDouble();
+        date = in.readString();
+        time = in.readString();
+        type = in.readString();
+    }
+
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(state);
+        dest.writeString(locFrom);
+        dest.writeDouble(latFrom);
+        dest.writeDouble(LngFrom);
+        dest.writeString(locTo);
+        dest.writeDouble(latTo);
+        dest.writeDouble(LngTo);
+        dest.writeString(date);
+        dest.writeString(time);
+        dest.writeString(type);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
 }

@@ -2,6 +2,8 @@ package com.waleed.tripplanner.view.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -18,7 +20,7 @@ import com.waleed.tripplanner.viewmodel.SignViewModel;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
-    TextView registerTextView;
+    TextView back_to_login;
     Button registerButton;
     SignViewModel signViewModel;
     ProgressBar progressBar;
@@ -28,22 +30,23 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        signViewModel = ViewModelProviders.of(this).get(SignViewModel.class);
+        signViewModel = ViewModelProviders.of(this, new SignViewModelFactory(RegisterActivity.this)).get(SignViewModel.class);
 
         init();
     }
 
     private void init() {
 
-        registerTextView = findViewById(R.id.registerTextView);
-        registerButton = findViewById(R.id.loginButton);
-        registerTextView.setOnClickListener(this);
-        registerButton.setOnClickListener(this);
         progressBar = findViewById(R.id.progressBar);
         textInputLayout_email = findViewById(R.id.textInputLayout_email);
         textInputLayout_password = findViewById(R.id.textInputLayout_password);
         textInputLayout_re_password = findViewById(R.id.textInputLayout_re_password);
 
+        back_to_login = findViewById(R.id.back_to_login);
+        back_to_login.setOnClickListener(this);
+
+        registerButton = findViewById(R.id.registerButton);
+        registerButton.setOnClickListener(this);
 
     }
 
@@ -57,40 +60,69 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             case R.id.registerButton:
 
                 progressBar.setVisibility(View.VISIBLE);
-                signViewModel.register(textInputLayout_email.getEditText().getText().toString(),
-                        textInputLayout_password.getEditText().getText().toString());
 
-                // to show the response for login operation
-                showMessage();
+                signViewModel.register(textInputLayout_email.getEditText().getText().toString(),
+                        textInputLayout_password.getEditText().getText().toString(),
+                        textInputLayout_re_password.getEditText().getText().toString());
 
                 break;
         }
     }
 
 
-    public void showMessage() {
+    public void showMessage(String message) {
+        progressBar.setVisibility(View.GONE);
+        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
 
-        signViewModel.getLiveData().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
+    public void emptyDataError() {
+        textInputLayout_email.setErrorEnabled(true);
+        textInputLayout_email.setError("this field can not be Empty ");
 
-                progressBar.setVisibility(View.GONE);
-                if (s.contains("Welcome")) {
-                    //login successfully
-                    Toast.makeText(RegisterActivity.this, s, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                    startActivity(intent);
+        textInputLayout_password.setErrorEnabled(true);
+        textInputLayout_password.setError("this field can not be Empty ");
 
-                } else if (s.contains("failed")) {
-                    //login failed
-                    Toast.makeText(RegisterActivity.this, s, Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
+        textInputLayout_re_password.setErrorEnabled(true);
+        textInputLayout_re_password.setError("this field can not be Empty ");
 
     }
 
+    public void removeEmptyDataError() {
+        textInputLayout_email.setErrorEnabled(false);
+        textInputLayout_email.setError("");
+
+        textInputLayout_password.setErrorEnabled(false);
+        textInputLayout_password.setError("");
+
+        textInputLayout_re_password.setErrorEnabled(false);
+        textInputLayout_re_password.setError("");
+    }
+
+
+    public void passwordError() {
+
+        textInputLayout_password.setErrorEnabled(true);
+        textInputLayout_password.setError("wrong password");
+
+        textInputLayout_re_password.setErrorEnabled(true);
+        textInputLayout_re_password.setError("wrong password");
+
+    }
+
+    class SignViewModelFactory implements ViewModelProvider.Factory {
+        private RegisterActivity registerActivity;
+
+
+        public SignViewModelFactory(RegisterActivity registerActivity) {
+            this.registerActivity = registerActivity;
+        }
+
+
+        @Override
+        public <T extends ViewModel> T create(Class<T> modelClass) {
+            return (T) new SignViewModel(registerActivity);
+        }
+    }
 
 }
 

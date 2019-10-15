@@ -1,6 +1,7 @@
 package com.waleed.tripplanner.repository;
 
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -29,5 +30,9 @@ public interface TripDAO {
 
     @Query("SELECT * FROM trips WHERE id = :id")
     Trip getTrip(int id);
+
+
+    @Query("SELECT * FROM trips WHERE state = :state")
+    List<Trip> getTrips(String state);
 
 }

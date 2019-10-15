@@ -40,5 +40,9 @@
     <string name="menu_sync">Sync</string>
     <string name="menu_logout">Logout</string>
 
+    <string name="trip_state_up_coming">Upcoming</string>
+    <string name="trip_state_done">Done</string>
+    <string name="trip_state_cancel">Cancel</string>
+
 
 </resources>
