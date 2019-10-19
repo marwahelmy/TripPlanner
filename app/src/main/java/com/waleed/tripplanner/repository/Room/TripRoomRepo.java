@@ -1,8 +1,9 @@
-package com.waleed.tripplanner.repository;
+package com.waleed.tripplanner.repository.Room;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+
+import androidx.lifecycle.MutableLiveData;
 
 import com.waleed.tripplanner.model.Trip;
 import com.waleed.tripplanner.viewmodel.AllTripsViewModel;
@@ -115,31 +116,31 @@ public class TripRoomRepo {
 
     }
 
-    public void getTrips(String tripState) {
 
-        class GetTrips extends AsyncTask<String, Void, List<Trip>> {
+    public void getTrips(final MutableLiveData<List<Trip>> mutableLiveData , final String tripState) {
+
+        class GetTrips extends AsyncTask<Void, Void, List<Trip>> {
 
             @Override
-            protected List<Trip> doInBackground(String... strings) {
-                List<Trip> tripList = getDB().getTrips(strings[0]);
+            protected List<Trip> doInBackground(Void... avoid) {
+                List<Trip> tripList = getDB().getTrips(tripState);
                 return tripList;
             }
 
             @Override
             protected void onPostExecute(List<Trip> trips) {
                 super.onPostExecute(trips);
-
-                Log.d(TAG, "onPostExecute: " + trips.get(0).getState());
-                allTripsViewModel.setLiveData(trips);
+                mutableLiveData.setValue(trips);
 
             }
         }
 
-        new GetTrips().execute(tripState);
+        new GetTrips().execute();
     }
 
 
-    public void getAllTrips() {
+
+    public void getAllTrips(final MutableLiveData<List<Trip>> mutableLiveData) {
 
         class GetTrips extends AsyncTask<Void, Void, List<Trip>> {
 
@@ -152,7 +153,8 @@ public class TripRoomRepo {
             @Override
             protected void onPostExecute(List<Trip> trips) {
                 super.onPostExecute(trips);
-                allTripsViewModel.setLiveData(trips);
+                //  allTripsViewModel.setLiveData(trips);
+                mutableLiveData.setValue(trips);
 
             }
         }

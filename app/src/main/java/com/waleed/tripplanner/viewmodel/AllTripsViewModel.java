@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.waleed.tripplanner.model.Trip;
-import com.waleed.tripplanner.repository.TripRoomRepo;
+import com.waleed.tripplanner.repository.Room.TripRoomRepo;
 import com.waleed.tripplanner.view.fragments.HistoryFragment;
 import com.waleed.tripplanner.view.fragments.UpcomingTripFragment;
 
@@ -33,23 +33,20 @@ public class AllTripsViewModel extends ViewModel {
 
 
     public LiveData<List<Trip>> getMutableLiveData() {
+
+        tripRoomRepo.getAllTrips(mutableLiveData);
         return mutableLiveData;
     }
 
-    public void setLiveData(List<Trip> tripList) {
-        mutableLiveData.setValue(tripList);
-    }
 
-    public void getTrips(String s) {
-        tripRoomRepo.getTrips(s);
-    }
-
-    public void getAllTrip() {
-        tripRoomRepo.getAllTrips();
+    public LiveData<List<Trip>> getMutableLiveData(String state) {
+        tripRoomRepo.getTrips(mutableLiveData, state);
+        return mutableLiveData;
     }
 
     public void deleteTrip(Trip trip) {
-
         tripRoomRepo.deleteTrip(trip);
     }
+
+
 }

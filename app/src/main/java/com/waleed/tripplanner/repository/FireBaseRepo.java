@@ -12,20 +12,31 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.waleed.tripplanner.model.User;
+import com.waleed.tripplanner.viewmodel.ProfileViewModel;
 import com.waleed.tripplanner.viewmodel.SignViewModel;
 
 public class FireBaseRepo {
 
     private FirebaseAuth mAuth;
-    User user;
     private static final String TAG = "FireBaseRepo";
     SignViewModel signViewModel;
+    ProfileViewModel profileViewModel;
+
+    public FireBaseRepo() {
+        mAuth = FirebaseAuth.getInstance();
+    }
 
     public FireBaseRepo(SignViewModel signViewModel) {
         // Initialize FireBase Auth
         mAuth = FirebaseAuth.getInstance();
         this.signViewModel = signViewModel;
     }
+
+    public FireBaseRepo(ProfileViewModel profileViewModel) {
+        mAuth = FirebaseAuth.getInstance();
+        this.profileViewModel = profileViewModel;
+    }
+
 
     public void login(final String email, final String password) {
 
@@ -51,7 +62,6 @@ public class FireBaseRepo {
                                 // FirebaseUser.getIdToken() instead.
                                 // String uid = firebaseUser.getUid();
 
-                                user = new User(email, name);
                             }
                             Log.d(TAG, "signInWithEmail:success");
                             signViewModel.sendMessage();
@@ -69,7 +79,6 @@ public class FireBaseRepo {
                 });
 
     }
-
 
     public void register(final String email, final String password) {
 
@@ -97,7 +106,6 @@ public class FireBaseRepo {
                                 // FirebaseUser.getIdToken() instead.
                                 // String uid = firebaseUser.getUid();
 
-                                user = new User(email, name);
                             }
 
                             signViewModel.sendMessage();
@@ -105,6 +113,22 @@ public class FireBaseRepo {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             // updateUI(null);
+                            signViewModel.sendError(task.getException().getMessage());
+                        }
+                    }
+                });
+    }
+
+    public void sendEmail(final String email) {
+
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Email sent.");
+                            signViewModel.sendMessage();
+                        } else {
                             signViewModel.sendError(task.getException().getMessage());
                         }
                     }
@@ -161,22 +185,38 @@ public class FireBaseRepo {
 //        //----------------------
     }
 
-    public void getUserData() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // Name, email address, and profile photo Url
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-            Uri photoUrl = user.getPhotoUrl();
+    public User getUserData() {
+        User user = null;
 
-            // Check if user's email is verified
-            boolean emailVerified = user.isEmailVerified();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser != null) {
+            String name = firebaseUser.getDisplayName();
+            String email = firebaseUser.getEmail();
+            Uri photoUrl = firebaseUser.getPhotoUrl();
+
 
             // The user's ID, unique to the Firebase project. Do NOT use this value to
             // authenticate with your backend server, if you have one. Use
             // FirebaseUser.getIdToken() instead.
-            String uid = user.getUid();
+            String uid = firebaseUser.getUid();
+
+            user = new User(uid, email, name, photoUrl);
         }
+
+        return user;
+    }
+
+
+    public void signOut() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseAuth.getInstance().signOut();
+            signViewModel.sendMessage();
+        } else {
+
+        }
+
     }
 
 

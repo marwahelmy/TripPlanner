@@ -1,4 +1,4 @@
-package com.waleed.tripplanner.repository;
+package com.waleed.tripplanner.repository.Room;
 
 
 import androidx.lifecycle.LiveData;
@@ -26,6 +26,7 @@ public interface TripDAO {
 
     @Query("SELECT * FROM trips")
     List<Trip> getAllTrips();
+    //LiveData<List<Trip>> getAllTrips();
 
 
     @Query("SELECT * FROM trips WHERE id = :id")

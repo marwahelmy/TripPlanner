@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.waleed.tripplanner.R;
+import com.waleed.tripplanner.utils.Validate;
 import com.waleed.tripplanner.viewmodel.SignViewModel;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
@@ -59,35 +60,64 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.registerButton:
 
-                progressBar.setVisibility(View.VISIBLE);
 
-                signViewModel.register(textInputLayout_email.getEditText().getText().toString(),
-                        textInputLayout_password.getEditText().getText().toString(),
-                        textInputLayout_re_password.getEditText().getText().toString());
+                if (Validate.isTextNotEmpty(textInputLayout_email.getEditText().getText().toString())) {
+
+                    removerError();
+
+                    if (Validate.isTextNotEmpty(textInputLayout_password.getEditText().getText().toString())) {
+
+                        removerError();
+
+                        if (Validate.isTextNotEmpty(textInputLayout_re_password.getEditText().getText().toString())) {
+                            removerError();
+
+                            if (Validate.arePasswordsEqual(textInputLayout_password.getEditText().getText().toString(),
+                                    textInputLayout_re_password.getEditText().getText().toString())) {
+
+                                removerError();
+
+                                if (Validate.isValidEmail(textInputLayout_email.getEditText().getText().toString())) {
+
+                                    removerError();
+                                    progressBar.setVisibility(View.VISIBLE);
+                                    registerButton.setVisibility(View.INVISIBLE);
+                                    signViewModel.register(textInputLayout_email.getEditText().getText().toString(),
+                                            textInputLayout_password.getEditText().getText().toString());
+
+                                } else {
+                                    textInputLayout_email.setErrorEnabled(true);
+                                    textInputLayout_email.setError("Email is not Valid! ");
+                                }
+
+                            } else {
+                                textInputLayout_password.setErrorEnabled(true);
+                                textInputLayout_password.setError("Error Password");
+
+                                textInputLayout_re_password.setErrorEnabled(true);
+                                textInputLayout_re_password.setError("Error Password");
+                            }
+
+                        } else {
+                            textInputLayout_re_password.setErrorEnabled(true);
+                            textInputLayout_re_password.setError("this Field can not be Empty! ");
+                        }
+
+                    } else {
+                        textInputLayout_password.setErrorEnabled(true);
+                        textInputLayout_password.setError("Password can not be Empty! ");
+                    }
+                } else {
+                    textInputLayout_email.setErrorEnabled(true);
+                    textInputLayout_email.setError("Email can not be Empty! ");
+                }
+
 
                 break;
         }
     }
 
-
-    public void showMessage(String message) {
-        progressBar.setVisibility(View.GONE);
-        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    public void emptyDataError() {
-        textInputLayout_email.setErrorEnabled(true);
-        textInputLayout_email.setError("this field can not be Empty ");
-
-        textInputLayout_password.setErrorEnabled(true);
-        textInputLayout_password.setError("this field can not be Empty ");
-
-        textInputLayout_re_password.setErrorEnabled(true);
-        textInputLayout_re_password.setError("this field can not be Empty ");
-
-    }
-
-    public void removeEmptyDataError() {
+    private void removerError() {
         textInputLayout_email.setErrorEnabled(false);
         textInputLayout_email.setError("");
 
@@ -99,13 +129,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    public void passwordError() {
+    public void showMessage(String message) {
+        progressBar.setVisibility(View.GONE);
+        registerButton.setVisibility(View.VISIBLE);
+        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
 
-        textInputLayout_password.setErrorEnabled(true);
-        textInputLayout_password.setError("wrong password");
-
-        textInputLayout_re_password.setErrorEnabled(true);
-        textInputLayout_re_password.setError("wrong password");
+    public void showNetworkError(String netWorkError) {
+        progressBar.setVisibility(View.GONE);
+        registerButton.setVisibility(View.VISIBLE);
+        Toast.makeText(this, netWorkError, Toast.LENGTH_SHORT).show();
 
     }
 

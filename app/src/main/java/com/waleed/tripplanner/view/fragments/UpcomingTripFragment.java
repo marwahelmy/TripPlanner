@@ -30,14 +30,14 @@ public class UpcomingTripFragment extends Fragment {
     FloatingActionButton add_fab;
     View root;
 
-    private AllTripsViewModel allTripsViewModel;
-    private UpComingTripsAdapter upComingTripsAdapter;
-
     @Override
     public void onStart() {
         super.onStart();
         updateRecyclerView();
     }
+
+    private AllTripsViewModel allTripsViewModel;
+    private UpComingTripsAdapter upComingTripsAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -55,13 +55,7 @@ public class UpcomingTripFragment extends Fragment {
 
         setupRecyclerView();
 
-        getAllTrips();
-
         return root;
-    }
-
-    private void getAllTrips() {
-        allTripsViewModel.getTrips(getResources().getString(R.string.trip_state_up_coming));
     }
 
 
@@ -80,9 +74,9 @@ public class UpcomingTripFragment extends Fragment {
 
     }
 
-    void updateRecyclerView() {
+    public void updateRecyclerView() {
 
-        allTripsViewModel.getMutableLiveData().observe(this, new Observer<List<Trip>>() {
+        allTripsViewModel.getMutableLiveData(getResources().getString(R.string.trip_state_up_coming)).observe(this, new Observer<List<Trip>>() {
             @Override
             public void onChanged(List<Trip> trips) {
                 upComingTripsAdapter.setTripList(trips);

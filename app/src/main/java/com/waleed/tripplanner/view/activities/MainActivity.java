@@ -2,6 +2,7 @@ package com.waleed.tripplanner.view.activities;
 
 import android.os.Bundle;
 
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -9,6 +10,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.waleed.tripplanner.R;
+import com.waleed.tripplanner.model.User;
+import com.waleed.tripplanner.viewmodel.ProfileViewModel;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -16,10 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+
+    private TextView headerUserName, headerEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +47,19 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+
+        initHeader();
+
+        ProfileViewModel profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
+
+        if (profileViewModel.getUserData() != null) {
+            getUserData(profileViewModel.getUserData());
+        }
+
+
     }
+
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
@@ -49,6 +67,18 @@ public class MainActivity extends AppCompatActivity {
 //        getMenuInflater().inflate(R.menu.main, menu);
 //        return true;
 //    }
+
+    private void initHeader() {
+        headerUserName = findViewById(R.id.headerUserName);
+        headerEmail = findViewById(R.id.headerEmail);
+
+    }
+
+    private void getUserData(User user) {
+        headerUserName.setText(user.getUsername());
+        headerEmail.setText(user.getEmail());
+
+    }
 
     @Override
     public boolean onSupportNavigateUp() {

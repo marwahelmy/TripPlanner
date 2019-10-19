@@ -32,12 +32,24 @@ public class HistoryFragment extends Fragment {
     public HistoryFragment() {
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateRecyclerView();
+    }
+
     private AllTripsViewModel allTripsViewModel;
     private View root;
     private HistoryAdapter historyAdapter;
     FloatingActionButton map_fab;
-
     List<Trip> tripsList;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        updateRecyclerView();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -58,16 +70,7 @@ public class HistoryFragment extends Fragment {
         });
         setupRecyclerView();
 
-        updateRecyclerView();
-
-        getAllTrips();
-
-
         return root;
-    }
-
-    private void getAllTrips() {
-        allTripsViewModel.getAllTrip();
     }
 
 
@@ -86,7 +89,7 @@ public class HistoryFragment extends Fragment {
 
     }
 
-    void updateRecyclerView() {
+    public void updateRecyclerView() {
 
         allTripsViewModel.getMutableLiveData().observe(this, new Observer<List<Trip>>() {
             @Override

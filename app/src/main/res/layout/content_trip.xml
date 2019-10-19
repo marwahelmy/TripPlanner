@@ -30,39 +30,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
-            android:id="@+id/dateTimeLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            app:layout_constraintEnd_toEndOf="@+id/directionLayout"
-            app:layout_constraintStart_toStartOf="@+id/directionLayout"
-            app:layout_constraintTop_toBottomOf="@+id/directionLayout">
-
-            <TextView
-                android:id="@+id/textViewDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:drawableStart="@drawable/ic_event_black_24dp"
-                android:padding="4dp"
-                android:text="@string/date" />
-
-            <TextView
-                android:id="@+id/textViewTime"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:drawableStart="@drawable/ic_access_time_black_24dp"
-                android:padding="4dp"
-                android:text="@string/time" />
-
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/directionLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -75,76 +42,144 @@
 
             <TextView
                 android:id="@+id/textViewFrom"
+                style="@android:style/Widget.EditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_weight="1"
+                android:background="@drawable/border"
                 android:drawableStart="@drawable/ic_search_black_24dp"
                 android:gravity="center|start"
-                android:padding="4dp"
-                android:text="@string/from" />
+                android:hint="@string/from"
+                android:padding="4dp" />
 
             <TextView
                 android:id="@+id/textViewTo"
+                style="@android:style/Widget.EditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_weight="1"
+                android:background="@drawable/border"
                 android:drawableStart="@drawable/ic_search_black_24dp"
                 android:gravity="center|start"
-                android:padding="4dp"
-                android:text="@string/to" />
+                android:hint="@string/to"
+                android:padding="4dp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/typeLayout"
+            android:id="@+id/dateTimeLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:weightSum="3"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="@+id/directionLayout"
+            app:layout_constraintStart_toStartOf="@+id/directionLayout"
+            app:layout_constraintTop_toBottomOf="@+id/directionLayout">
+
+            <TextView
+                android:id="@+id/textViewDate"
+                style="@android:style/Widget.EditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/border"
+                android:drawableStart="@drawable/ic_event_black_24dp"
+                android:gravity="center|start"
+                android:hint="@string/date"
+                android:padding="4dp" />
+
+            <TextView
+                android:id="@+id/textViewTime"
+                style="@android:style/Widget.EditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/border"
+                android:drawableStart="@drawable/ic_access_time_black_24dp"
+                android:gravity="center|start"
+                android:hint="@string/time"
+                android:padding="4dp" />
+
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/radioGroupType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
             app:layout_constraintEnd_toEndOf="@+id/dateTimeLayout"
             app:layout_constraintStart_toStartOf="@+id/dateTimeLayout"
             app:layout_constraintTop_toBottomOf="@+id/dateTimeLayout">
 
+
+            <RadioButton
+                android:id="@+id/radioOneDirection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:background="@drawable/border"
+                android:padding="5dp"
+                android:text="@string/one_direction" />
+
+            <RadioButton
+                android:id="@+id/radioRoundTrip"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:background="@drawable/border"
+                android:padding="5dp"
+                android:text="@string/round_trip" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/dateBackTimeLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="2"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroupType"
+            app:layout_constraintStart_toStartOf="@+id/radioGroupType"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroupType">
+
             <TextView
+                android:id="@+id/textViewDateBack"
+                style="@android:style/Widget.EditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                android:layout_weight=".5"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/type" />
+                android:layout_weight="1"
+                android:background="@drawable/border"
+                android:drawableStart="@drawable/ic_event_black_24dp"
+                android:gravity="center|start"
+                android:hint="@string/date"
+                android:padding="4dp" />
 
-            <RadioGroup
+            <TextView
+                android:id="@+id/textViewTimeBack"
+                style="@android:style/Widget.EditText"
                 android:layout_width="0dp"
-                android:id="@+id/radioGroupType"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                android:layout_weight="2.5"
-                android:orientation="horizontal"
-                android:padding="4dp"
-                android:weightSum="2">
-
-
-                <RadioButton
-                    android:id="@+id/radioOneDirection"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/one_direction" />
-
-                <RadioButton
-                    android:id="@+id/radioRoundTrip"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/round_trip" />
-            </RadioGroup>
-
+                android:layout_weight="1"
+                android:background="@drawable/border"
+                android:drawableStart="@drawable/ic_access_time_black_24dp"
+                android:gravity="center|start"
+                android:hint="@string/time"
+                android:padding="4dp" />
 
         </LinearLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout_description"
@@ -156,9 +191,9 @@
             android:layout_marginBottom="16dp"
             android:hint="@string/trip_description"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/typeLayout"
-            app:layout_constraintStart_toStartOf="@+id/typeLayout"
-            app:layout_constraintTop_toBottomOf="@+id/typeLayout">
+            app:layout_constraintEnd_toEndOf="@+id/dateBackTimeLayout"
+            app:layout_constraintStart_toStartOf="@+id/dateBackTimeLayout"
+            app:layout_constraintTop_toBottomOf="@+id/dateBackTimeLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"

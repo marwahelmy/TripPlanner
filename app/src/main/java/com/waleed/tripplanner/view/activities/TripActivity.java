@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -33,8 +34,11 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.textfield.TextInputLayout;
 import com.waleed.tripplanner.R;
 import com.waleed.tripplanner.model.Trip;
+import com.waleed.tripplanner.utils.Validate;
 import com.waleed.tripplanner.viewmodel.TripViewModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -45,9 +49,11 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "TripActivity";
 
     TripViewModel tripViewModel;
-    TextView textViewFrom, textViewTo, textViewDate, textViewTime;
+    TextView textViewFrom, textViewTo, textViewDate, textViewTime, textViewDateBack, textViewTimeBack;
     TextInputLayout textInputLayout_name, textInputLayout_description;
     RadioGroup radioGroupType;
+
+    LinearLayout dateBackTimeLayout;
 
     String location_from_name;
     double location_from_lat;
@@ -58,14 +64,15 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
     double location_to_lng;
 
     String state;
-    String type;
+    String tripType = "";
 
     int FROM_REQUEST_CODE = 22;
     int TO_REQUEST_CODE = 44;
 
     // zero means new trip and 1 means update an old trip
     int mode = 0;
-    private Trip oldTrip;
+    private Trip oldTrip, newTrip;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     // Set the fields to specify which types of place data to
     // return after the user has made a selection.
@@ -78,7 +85,18 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_trip);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(getResources().getString(R.string.new_trip));
+
+        init();
+
+        if (getIntent().getExtras() != null) {
+            mode = 1;
+            getSupportActionBar().setTitle(getResources().getString(R.string.edit_trip));
+            oldTrip = getIntent().getExtras().getParcelable("currentTrip");
+            setTrip(oldTrip);
+        } else {
+            mode = 0;
+            getSupportActionBar().setTitle(getResources().getString(R.string.new_trip));
+        }
 
         tripViewModel = ViewModelProviders.of(this, new TripViewModelFactory(this)).get(TripViewModel.class);
 
@@ -110,16 +128,58 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
 //        });
 
 
-        init();
+    }
 
-        if (getIntent().getExtras() != null) {
-            mode = 1;
-            oldTrip = getIntent().getExtras().getParcelable("currentTrip");
-            setTrip(oldTrip);
-        } else {
-            mode = 0;
-        }
+    private void init() {
 
+        dateBackTimeLayout = findViewById(R.id.dateBackTimeLayout);
+        textViewDateBack = findViewById(R.id.textViewDateBack);
+        textViewDateBack.setOnClickListener(this);
+        textViewTimeBack = findViewById(R.id.textViewTimeBack);
+        textViewTimeBack.setOnClickListener(this);
+
+
+        textInputLayout_name = findViewById(R.id.textInputLayout_name);
+        textInputLayout_description = findViewById(R.id.textInputLayout_description);
+
+        textViewFrom = findViewById(R.id.textViewFrom);
+        textViewFrom.setOnClickListener(this);
+
+        textViewTo = findViewById(R.id.textViewTo);
+        textViewTo.setOnClickListener(this);
+
+        textViewDate = findViewById(R.id.textViewDate);
+        textViewDate.setOnClickListener(this);
+
+        textViewTime = findViewById(R.id.textViewTime);
+        textViewTime.setOnClickListener(this);
+
+        radioGroupType = findViewById(R.id.radioGroupType);
+        radioGroupType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+                    case R.id.radioOneDirection:
+                        tripType = getResources().getString(R.string.one_direction);
+                        dateBackTimeLayout.setVisibility(View.GONE);
+                        break;
+                    case R.id.radioRoundTrip:
+                        tripType = getResources().getString(R.string.round_trip);
+                        dateBackTimeLayout.setVisibility(View.VISIBLE);
+                        break;
+                }
+            }
+        });
+
+
+    }
+
+
+    private void startPlacesIntent(int request) {
+        // Start the autocomplete intent.
+        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields).build(this);
+        startActivityForResult(intent, request);
     }
 
 
@@ -135,28 +195,31 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (item.getItemId()) {
             case R.id.save_menu_item:
-                if (mode == 0) {
-                    tripViewModel.saveTrip(getTrip());
-                } else if (mode == 1) {
+                if (getTrip() != null) {
+                    if (mode == 0) {
+                        tripViewModel.saveTrip(getTrip());
 
-                    tripViewModel.updateTrip(getTrip());
+                    } else if (mode == 1) {
 
-                    if (oldTrip.equals(getTrip())) {
+                        if (oldTrip.getState().equals(getResources().getString(R.string.trip_state_up_coming))) {
 
-                        Log.d(TAG, "onOptionsItemSelected: oldTrip == getTrip()");
-                        // tripViewModel.updateTrip(getTrip());
-                    } else {
-                        Log.d(TAG, "onOptionsItemSelected: else");
+                            getTrip().setId(oldTrip.getId());
+                            tripViewModel.updateTrip(getTrip());
 
+                        } else if (oldTrip.getState().equals(getResources().getString(R.string.trip_state_cancel))
+                                || oldTrip.getState().equals(getResources().getString(R.string.trip_state_done))) {
+
+                            tripViewModel.saveTrip(getTrip());
+                        }
                     }
                 }
+
 
                 break;
 
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -220,35 +283,20 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
                 startPlacesIntent(TO_REQUEST_CODE);
                 break;
             case R.id.textViewDate:
-                getDate();
+                getDate(textViewDate);
                 break;
             case R.id.textViewTime:
-                getTime();
+                getTime(textViewTime);
+                break;
+            case R.id.textViewDateBack:
+                getDate(textViewDateBack);
+                break;
+            case R.id.textViewTimeBack:
+                getTime(textViewTimeBack);
                 break;
         }
     }
 
-
-    private void init() {
-
-        textInputLayout_name = findViewById(R.id.textInputLayout_name);
-        textInputLayout_description = findViewById(R.id.textInputLayout_description);
-
-        textViewFrom = findViewById(R.id.textViewFrom);
-        textViewFrom.setOnClickListener(this);
-
-        textViewTo = findViewById(R.id.textViewTo);
-        textViewTo.setOnClickListener(this);
-
-        textViewDate = findViewById(R.id.textViewDate);
-        textViewDate.setOnClickListener(this);
-
-        textViewTime = findViewById(R.id.textViewTime);
-        textViewTime.setOnClickListener(this);
-
-        radioGroupType = findViewById(R.id.radioGroupType);
-
-    }
 
     private void setTrip(Trip trip) {
 
@@ -284,52 +332,76 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
             location_to_lng = trip.getLngTo();
         }
 
-
         setTripState(trip.getState());
 
         setTripType(trip.getType());
+
+        //if type == round trip
+        if (trip.getType().equals(getResources().getString(R.string.round_trip))) {
+            dateBackTimeLayout.setVisibility(View.VISIBLE);
+            textViewDateBack.setText(trip.getDateBack());
+            textViewTimeBack.setText(trip.getTimeBack());
+
+        }
 
     }
 
     private Trip getTrip() {
 
-        Trip trip;
 
         if (mode == 0) {
-            trip = new Trip();
+            newTrip = new Trip();
+            newTrip.setState(getResources().getString(R.string.trip_state_up_coming));
         } else {
-            trip = oldTrip;
+            newTrip = oldTrip;
+            newTrip.setState(oldTrip.getState());
+        }
+
+        if (isTripName() && isTripDescription()
+                // && isFrom() && isTo()
+                && isDate() && isTime()
+                && isType()) {
+
+            if (newTrip.getType().equals(getResources().getString(R.string.round_trip))) {
+                if (isDateBack() && isTimeBack()) {
+                    return newTrip;
+                }
+
+            } else {
+                return newTrip;
+            }
+
+
         }
 
 
-        trip.setName(textInputLayout_name.getEditText().getText().toString());
-        trip.setDescription(textInputLayout_description.getEditText().getText().toString());
-
-        trip.setDate(textViewDate.getText().toString());
-        trip.setTime(textViewTime.getText().toString());
-
-        trip.setState(getTripState());
-
-        trip.setType(getTripType());
-
-        trip.setLocFrom(location_from_name);
-        trip.setLatFrom(location_from_lat);
-        trip.setLngFrom(location_from_lng);
-
-        trip.setLocTo(location_to_name);
-        trip.setLatTo(location_to_lat);
-        trip.setLngTo(location_to_lng);
-        return trip;
+        return null;
 
     }
 
-    private void startPlacesIntent(int request) {
-        // Start the autocomplete intent.
-        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields).build(this);
-        startActivityForResult(intent, request);
+
+    private void setTripState(String state) {
+        this.state = state;
     }
 
-    public void getTime() {
+
+    // round trip or one direction
+    private void setTripType(String type) {
+
+        if (type.equals(getResources().getString(R.string.one_direction))) {
+            radioGroupType.check(R.id.radioOneDirection);
+
+        } else if (type.equals(getResources().getString(R.string.round_trip))) {
+            radioGroupType.check(R.id.radioRoundTrip);
+        }
+        this.tripType = type;
+    }
+
+    String getTripType() {
+        return tripType;
+    }
+
+    private void getTime(final TextView textView) {
 
         final Calendar c = Calendar.getInstance();
         int mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -339,13 +411,13 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        textViewTime.setText(hourOfDay + ":" + minute);
+                        textView.setText(hourOfDay + ":" + minute);
                     }
                 }, mHour, mMinute, false);
         timePickerDialog.show();
     }
 
-    public void getDate() {
+    private void getDate(final TextView textView) {
 
         final Calendar c = Calendar.getInstance();
 
@@ -357,51 +429,190 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        textViewDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                        textView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(year, monthOfYear, dayOfMonth);
+                        textView.setText(calendar.getTime() + "");
+                        Log.d(TAG, "onDateSet: date=" + calendar.getTime());
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 
-    String getTripState() {
-        return state;
-    }
-
-    void setTripState(String state) {
-        this.state = state;
-
-
-    }
-
-    void setTripType(String type) {
-
-
-        if (type.equals(getResources().getString(R.string.one_direction))) {
-            radioGroupType.check(R.id.radioOneDirection);
-
-        } else if (type.equals(getResources().getString(R.string.round_trip))) {
-            radioGroupType.check(R.id.radioRoundTrip);
-        }
-        this.type = type;
-    }
-
-    String getTripType() {
-
-        switch (radioGroupType.getCheckedRadioButtonId()) {
-            case R.id.radioOneDirection:
-                type = getResources().getString(R.string.one_direction);
-                break;
-            case R.id.radioRoundTrip:
-                type = getResources().getString(R.string.round_trip);
-                break;
-        }
-        return type;
-    }
 
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         finish();
     }
+
+    public void showError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+
+    //---------------------- validation methods
+    public boolean isTripName() {
+        // name
+        if (Validate.isTextNotEmpty(textInputLayout_name.getEditText().getText().toString())) {
+            newTrip.setName(textInputLayout_name.getEditText().getText().toString());
+
+            textInputLayout_name.setErrorEnabled(false);
+            textInputLayout_name.setError("");
+            return true;
+
+        } else {
+            textInputLayout_name.setErrorEnabled(true);
+            textInputLayout_name.setError("Name can't be empty ! ");
+        }
+        return false;
+    }
+
+    public boolean isTripDescription() {
+
+        // description
+        if (Validate.isTextNotEmpty(textInputLayout_description.getEditText().getText().toString())) {
+
+            newTrip.setDescription(textInputLayout_description.getEditText().getText().toString());
+
+            textInputLayout_description.setErrorEnabled(false);
+            textInputLayout_description.setError("");
+            return true;
+
+        } else {
+            textInputLayout_description.setErrorEnabled(true);
+            textInputLayout_description.setError("description can't be empty ! ");
+            return false;
+        }
+
+    }
+
+    private boolean isFrom() {
+        // from(start)
+        if (Validate.isTextNotEmpty(textViewFrom.getText().toString())) {
+            newTrip.setLocFrom(location_from_name);
+            newTrip.setLatFrom(location_from_lat);
+            newTrip.setLngFrom(location_from_lng);
+            textViewFrom.setError(null);
+            return true;
+
+        } else {
+            textViewFrom.setError("please select your start point");
+            return false;
+        }
+    }
+
+    private boolean isTo() {
+        //to(destination)
+        if (Validate.isTextNotEmpty(textViewTo.getText().toString())) {
+            newTrip.setLocTo(location_to_name);
+            newTrip.setLatTo(location_to_lat);
+            newTrip.setLngTo(location_to_lng);
+            textViewTo.setError(null);
+            return true;
+        } else {
+            textViewTo.setError("please select your destination");
+            return false;
+        }
+    }
+
+    private boolean isType() {
+        // type
+        if (Validate.isTextNotEmpty(getTripType())) {
+            newTrip.setType(getTripType());
+            return true;
+        } else {
+            Toast.makeText(this, "please choose the type of your trip ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
+    private boolean isTime() {
+        // time
+        if (Validate.isTextNotEmpty(textViewTime.getText().toString())) {
+            newTrip.setTime(textViewTime.getText().toString());
+            textViewTime.setError(null);
+            return true;
+        } else {
+            textViewTime.setError("please select the trip time");
+            return false;
+        }
+    }
+
+    private boolean isDate() {
+        // date
+        if (Validate.isTextNotEmpty(textViewDate.getText().toString())) {
+
+            try {
+                Log.d(TAG, "isDate:textViewDate =  " + dateFormat.parse(textViewDate.getText().toString()));
+                Log.d(TAG, "isDate:today's date =  " + Calendar.getInstance().getTime());
+
+                if (dateFormat.parse(textViewDate.getText().toString()).before(Calendar.getInstance().getTime())) {
+
+
+                    textViewDate.setError("please select a valid date");
+                    return false;
+
+                } else {
+                    newTrip.setDate(textViewDate.getText().toString());
+                    textViewDate.setError(null);
+                    return true;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                textViewDate.setError("please select a valid date");
+                return false;
+            }
+
+        } else {
+            textViewDate.setError("please select the trip date");
+            return false;
+        }
+
+    }
+
+    private boolean isTimeBack() {
+        if (Validate.isTextNotEmpty(textViewTimeBack.getText().toString())) {
+            newTrip.setTimeBack(textViewTimeBack.getText().toString());
+            textViewTimeBack.setError(null);
+            return true;
+        } else {
+            textViewTimeBack.setError("please select back time");
+            return false;
+        }
+    }
+
+    private boolean isDateBack() {
+
+        // date
+        if (Validate.isTextNotEmpty(textViewDateBack.getText().toString())) {
+
+            try {
+                if (dateFormat.parse(textViewDateBack.getText().toString()).getTime() >= System.currentTimeMillis()) {
+                    newTrip.setDate(textViewDateBack.getText().toString());
+                    textViewDateBack.setError(null);
+                    return true;
+
+                } else {
+                    textViewDateBack.setError("please select a valid date");
+                    return false;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                textViewDateBack.setError("please select a valid date");
+
+                return false;
+            }
+
+        } else {
+            textViewDateBack.setError("please select the trip date");
+            return false;
+        }
+
+    }
+
 
     class TripViewModelFactory implements ViewModelProvider.Factory {
         private TripActivity tripActivity;

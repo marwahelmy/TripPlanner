@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.waleed.tripplanner.R;
 import com.waleed.tripplanner.model.Trip;
 import com.waleed.tripplanner.view.activities.MapsActivity;
+import com.waleed.tripplanner.view.activities.TripActivity;
 import com.waleed.tripplanner.view.fragments.HistoryFragment;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryT
             @Override
             public void onClick(View v) {
                 historyFragment.deleteTrip(tripList.get(position));
+                historyFragment.updateRecyclerView();
             }
         });
 
@@ -81,7 +83,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryT
 
     public class HistoryTripViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textViewName, textViewFrom, textViewTo, textViewDate, textViewTime, textViewDescription,textViewState,textViewType;
+        TextView textViewName, textViewFrom, textViewTo, textViewDate, textViewTime, textViewDescription, textViewState, textViewType;
         ImageView imageViewDelete;
 
         public HistoryTripViewHolder(@NonNull View itemView) {
@@ -89,7 +91,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryT
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, MapsActivity.class);
+                    Intent intent = new Intent(context, TripActivity.class);
                     intent.putExtra("currentTrip", tripList.get(getAdapterPosition()));
                     context.startActivity(intent);
                 }

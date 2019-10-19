@@ -61,6 +61,7 @@ public class UpComingTripsAdapter extends RecyclerView.Adapter<UpComingTripsAdap
             @Override
             public void onClick(View v) {
                 upcomingTripFragment.deleteTrip(tripList.get(position));
+                upcomingTripFragment.updateRecyclerView();
 
             }
         });

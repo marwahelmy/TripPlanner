@@ -8,7 +8,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "trips")
-public class Trip  implements Parcelable {
+public class Trip implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
@@ -29,13 +29,17 @@ public class Trip  implements Parcelable {
     private String date;
     private String time;
 
+    private String dateBack;
+    private String timeBack;
+
     private String type;
 
     public Trip() {
     }
 
-    public Trip(int id, String name, String description, String state, String locFrom, double latFrom, double lngFrom,
-                String locTo, double latTo, double lngTo, String date, String time, String type) {
+    public Trip(int id, String name, String description, String state, String locFrom, double latFrom,
+                double lngFrom, String locTo, double latTo, double lngTo, String date, String time, String dateBack,
+                String timeBack, String type) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -43,14 +47,15 @@ public class Trip  implements Parcelable {
         this.locFrom = locFrom;
         this.latFrom = latFrom;
         LngFrom = lngFrom;
-        this.locTo =locTo;
+        this.locTo = locTo;
         this.latTo = latTo;
         LngTo = lngTo;
         this.date = date;
         this.time = time;
+        this.dateBack = dateBack;
+        this.timeBack = timeBack;
         this.type = type;
     }
-
 
 
     public int getId() {
@@ -149,6 +154,22 @@ public class Trip  implements Parcelable {
         this.time = time;
     }
 
+    public String getDateBack() {
+        return dateBack;
+    }
+
+    public void setDateBack(String dateBack) {
+        this.dateBack = dateBack;
+    }
+
+    public String getTimeBack() {
+        return timeBack;
+    }
+
+    public void setTimeBack(String timeBack) {
+        this.timeBack = timeBack;
+    }
+
     public String getType() {
         return type;
     }
@@ -156,19 +177,6 @@ public class Trip  implements Parcelable {
     public void setType(String type) {
         this.type = type;
     }
-
-
-
-    public static final Creator<Trip> CREATOR = new Creator<Trip>() {
-        @Override
-        public Trip createFromParcel(Parcel in) {
-            return new Trip(in);
-        }
-        @Override
-        public Trip[] newArray(int size) {
-            return new Trip[size];
-        }
-    };
 
 
     protected Trip(Parcel in) {
@@ -184,9 +192,10 @@ public class Trip  implements Parcelable {
         LngTo = in.readDouble();
         date = in.readString();
         time = in.readString();
+        dateBack = in.readString();
+        timeBack = in.readString();
         type = in.readString();
     }
-
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -202,8 +211,22 @@ public class Trip  implements Parcelable {
         dest.writeDouble(LngTo);
         dest.writeString(date);
         dest.writeString(time);
+        dest.writeString(dateBack);
+        dest.writeString(timeBack);
         dest.writeString(type);
     }
+
+    public static final Creator<Trip> CREATOR = new Creator<Trip>() {
+        @Override
+        public Trip createFromParcel(Parcel in) {
+            return new Trip(in);
+        }
+
+        @Override
+        public Trip[] newArray(int size) {
+            return new Trip[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -211,3 +234,4 @@ public class Trip  implements Parcelable {
     }
 
 }
+

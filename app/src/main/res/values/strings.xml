@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TripPlanner</string>
 
-     <string name="title_activity_trip">Trip Activity</string>
+    <string name="title_activity_trip">Trip Activity</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="hint_re_password">Renter Password</string>
@@ -13,13 +13,13 @@
 
     <string name="save">save</string>
     <string name="new_trip">New Trip</string>
+    <string name="edit_trip">Edit Trip</string>
     <string name="trip_name">Trip Name</string>
     <string name="trip_description">description</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
-    <string name="type">Type : </string>
     <string name="one_direction">One Direction</string>
     <string name="round_trip">Round Trip</string>
 
@@ -43,6 +43,12 @@
     <string name="trip_state_up_coming">Upcoming</string>
     <string name="trip_state_done">Done</string>
     <string name="trip_state_cancel">Cancel</string>
+    <string name="start">Start</string>
+    <string name="later">Later</string>
+    <string name="cancel">Cancel</string>
+    <string name="forgot_password">Forgot Your Password ?</string>
+    <string name="send_email">Send Email</string>
+    <string name="send_vaild_email">Write a valid Email to send you a new password</string>
 
 
 </resources>

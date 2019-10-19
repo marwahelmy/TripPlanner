@@ -1,4 +1,4 @@
-package com.waleed.tripplanner.repository;
+package com.waleed.tripplanner.repository.Room;
 
 import android.content.Context;
 
@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 import com.waleed.tripplanner.model.Trip;
 
-@Database(entities = {Trip.class}, version = 1)
+@Database(entities = {Trip.class}, version = 1,exportSchema = false)
 public abstract class TripDataBase extends RoomDatabase {
 
     private static TripDataBase INSTANCE;
