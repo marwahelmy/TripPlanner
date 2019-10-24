@@ -1,14 +1,17 @@
 package com.waleed.tripplanner.view.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.waleed.tripplanner.R;
@@ -60,8 +63,7 @@ public class UpComingTripsAdapter extends RecyclerView.Adapter<UpComingTripsAdap
         holder.getImageViewDelete().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                upcomingTripFragment.deleteTrip(tripList.get(position));
-                upcomingTripFragment.updateRecyclerView();
+                showDialog(position);
 
             }
         });
@@ -163,4 +165,25 @@ public class UpComingTripsAdapter extends RecyclerView.Adapter<UpComingTripsAdap
     }
 
 
+    public void showDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        // builder.setTitle("Delete Trip");
+        builder.setMessage("Are You sure");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                upcomingTripFragment.deleteTrip(tripList.get(position));
+                upcomingTripFragment.updateRecyclerView();
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+    }
 }

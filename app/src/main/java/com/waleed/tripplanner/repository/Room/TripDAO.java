@@ -16,10 +16,10 @@ import java.util.List;
 public interface TripDAO {
 
     @Insert
-    void insert(Trip trip);
+    int insert(Trip trip);
 
     @Update
-    void update(Trip trip);
+    int update(Trip trip);
 
     @Delete
     void delete(Trip trip);
@@ -35,5 +35,10 @@ public interface TripDAO {
 
     @Query("SELECT * FROM trips WHERE state = :state")
     List<Trip> getTrips(String state);
+
+
+//    @Query("SELECT * FROM user WHERE age BETWEEN :minAge AND :maxAge")
+//    public User[] loadAllUsersBetweenAges(int minAge, int maxAge);
+
 
 }

@@ -61,7 +61,11 @@ public class UpcomingTripFragment extends Fragment {
 
     public void deleteTrip(Trip trip) {
         allTripsViewModel.deleteTrip(trip);
+        allTripsViewModel.cancelAlarm(trip ,getActivity());
     }
+
+
+
 
     private void setupRecyclerView() {
 

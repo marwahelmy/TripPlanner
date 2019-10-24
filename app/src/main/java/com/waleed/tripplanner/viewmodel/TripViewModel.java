@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
 
@@ -39,30 +40,16 @@ public class TripViewModel extends ViewModel {
 
 
     public void saveTrip(Trip trip) {
-        if (validateData(trip)) {
-            // go to  room repo
-            tripRoomRepo.setTrip(trip);
-
-            setAlarm(trip);
-        } else {
-            // show error
-        }
+        tripRoomRepo.setTrip(trip);
+       // setAlarm(trip);
     }
 
 
     public void updateTrip(Trip trip) {
-        if (validateData(trip)) {
-            // go to  room repo
-            tripRoomRepo.updateTrip(trip);
-        } else {
-            // show error
-        }
+        tripRoomRepo.updateTrip(trip);
+        //updateAlarm(trip);
     }
 
-
-    public boolean validateData(Trip trip) {
-        return true;
-    }
 
     public void showMessage(String message) {
         if (tripActivity != null) {
@@ -76,23 +63,33 @@ public class TripViewModel extends ViewModel {
 
 
         Calendar cal = Calendar.getInstance();
-        Date date = new Date();
+        Date date = null;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
         try {
             date = sdf.parse(trip.getDate() + " " + trip.getTime());
             cal.setTime(date);
+            cal.set(Calendar.SECOND, 0);
+
+            Log.d("setAlarm", "Calendar.YEAR= " + cal.get(Calendar.YEAR));
+            Log.d("setAlarm", "Calendar.MONTH=" + cal.get(Calendar.MONTH));
+            Log.d("setAlarm", "Calendar.DAY_OF_MONTH= " + cal.get(Calendar.DAY_OF_MONTH));
+            Log.d("setAlarm", "Calendar.HOUR_OF_DAY= " + cal.get(Calendar.HOUR_OF_DAY));
+            Log.d("setAlarm", "Calendar.MINUTE= " + cal.get(Calendar.MINUTE));
+
+
         } catch (ParseException e) {
             e.printStackTrace();
+            Log.d("setAlarm", "exception= " + e);
         }
 
 
         AlarmManager alarmManager = (AlarmManager) tripActivity.getSystemService(Context.ALARM_SERVICE);
 
         Intent alarmIntent = new Intent(tripActivity, AlarmReceiver.class);
-        alarmIntent.putExtra("amTrip",trip);
+        alarmIntent.putExtra("amTrip", trip);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(tripActivity, 1, alarmIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(tripActivity, trip.getId(), alarmIntent, PendingIntent.FLAG_ONE_SHOT);
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
 
@@ -101,12 +98,36 @@ public class TripViewModel extends ViewModel {
     }
 
 
-    public void cancelAlarm() {
+    public void updateAlarm(Trip trip) {
+
+        Calendar cal = Calendar.getInstance();
+        Date date = null;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+        try {
+            date = sdf.parse(trip.getDate() + " " + trip.getTime());
+            cal.setTime(date);
+            cal.set(Calendar.SECOND, 0);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        AlarmManager alarmManager = (AlarmManager) tripActivity.getSystemService(Context.ALARM_SERVICE);
+
+        Intent alarmIntent = new Intent(tripActivity, AlarmReceiver.class);
+        alarmIntent.putExtra("amTrip", trip);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(tripActivity, trip.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
+
+    }
+
+    public void cancelAlarm(Trip trip) {
 
         AlarmManager alarmManager = (AlarmManager) alarmActivity.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(alarmActivity, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(alarmActivity, 1, intent, 0);
-
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(alarmActivity, trip.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pendingIntent);
 
     }

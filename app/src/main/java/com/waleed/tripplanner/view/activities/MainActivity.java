@@ -19,12 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-
+    private View headerView;
     private TextView headerUserName, headerEmail;
 
     @Override
@@ -36,22 +37,24 @@ public class MainActivity extends AppCompatActivity {
 
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
         NavigationView navigationView = findViewById(R.id.nav_view);
+        headerView = navigationView.getHeaderView(0);
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_upcoming_trip, R.id.nav_history, R.id.nav_profile,
                 R.id.nav_sync, R.id.nav_logout)
-                .setDrawerLayout(drawer)
-                .build();
+                .setDrawerLayout(drawer).build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
-        initHeader();
-
         ProfileViewModel profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
+
+        initHeader();
 
         if (profileViewModel.getUserData() != null) {
             getUserData(profileViewModel.getUserData());
@@ -69,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private void initHeader() {
-        headerUserName = findViewById(R.id.headerUserName);
-        headerEmail = findViewById(R.id.headerEmail);
+        headerUserName = headerView.findViewById(R.id.headerUserName);
+        headerEmail = headerView.findViewById(R.id.headerEmail);
 
     }
 

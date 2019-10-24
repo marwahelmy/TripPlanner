@@ -191,6 +191,7 @@ public class FireBaseRepo {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (firebaseUser != null) {
+            String uid = firebaseUser.getUid();
             String name = firebaseUser.getDisplayName();
             String email = firebaseUser.getEmail();
             Uri photoUrl = firebaseUser.getPhotoUrl();
@@ -199,7 +200,13 @@ public class FireBaseRepo {
             // The user's ID, unique to the Firebase project. Do NOT use this value to
             // authenticate with your backend server, if you have one. Use
             // FirebaseUser.getIdToken() instead.
-            String uid = firebaseUser.getUid();
+
+
+            Log.d(TAG, "firebaseUser:uid =  " + uid);
+            Log.d(TAG, "firebaseUser:name =  " + name);
+            Log.d(TAG, "firebaseUser:email =  " + email);
+            Log.d(TAG, "firebaseUser:photoUrl =  " + photoUrl);
+
 
             user = new User(uid, email, name, photoUrl);
         }

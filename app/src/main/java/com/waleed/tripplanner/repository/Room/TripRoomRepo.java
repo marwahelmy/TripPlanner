@@ -54,20 +54,24 @@ public class TripRoomRepo {
 
     }
 
-    public void setTrip(Trip trip) {
+    public void setTrip(final Trip trip) {
 
         class SetTrip extends AsyncTask<Trip, Void, Void> {
 
             @Override
             protected Void doInBackground(Trip... trips) {
-                getDB().insert(trips[0]);
+                int i = getDB().insert(trip);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                tripViewModel.showMessage("add");
+
+                tripViewModel.setAlarm(trip);
+                //  tripViewModel.setAlarm(trip.getId());
+
+                tripViewModel.showMessage("add Successfully");
             }
         }
 
@@ -75,7 +79,7 @@ public class TripRoomRepo {
 
     }
 
-    public void updateTrip(Trip trip) {
+    public void updateTrip(final Trip trip) {
 
         class UpdateTrip extends AsyncTask<Trip, Void, Void> {
 
@@ -88,7 +92,8 @@ public class TripRoomRepo {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                tripViewModel.showMessage("update");
+                tripViewModel.updateAlarm(trip);
+                tripViewModel.showMessage("update Successfully");
             }
         }
 
@@ -117,7 +122,7 @@ public class TripRoomRepo {
     }
 
 
-    public void getTrips(final MutableLiveData<List<Trip>> mutableLiveData , final String tripState) {
+    public void getTrips(final MutableLiveData<List<Trip>> mutableLiveData, final String tripState) {
 
         class GetTrips extends AsyncTask<Void, Void, List<Trip>> {
 
@@ -137,7 +142,6 @@ public class TripRoomRepo {
 
         new GetTrips().execute();
     }
-
 
 
     public void getAllTrips(final MutableLiveData<List<Trip>> mutableLiveData) {

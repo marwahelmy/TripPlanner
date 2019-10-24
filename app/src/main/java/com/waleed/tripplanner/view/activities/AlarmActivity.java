@@ -6,10 +6,20 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -24,22 +34,29 @@ public class AlarmActivity extends AppCompatActivity implements View.OnClickList
     Button buttonStart, buttonLater, buttonCancel;
     TripViewModel tripViewModel;
     Trip trip;
+    MediaPlayer mediaPlayer;
+    boolean b =true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
 
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
         tripViewModel = ViewModelProviders.of(this, new TripViewModelFactory(this)).get(TripViewModel.class);
 
-
         init();
+
+      //  startSound();
 
         if (getIntent().getExtras() != null) {
             trip = getIntent().getExtras().getParcelable("alarmTrip");
             setTripData();
         }
+
     }
+
 
     private void init() {
         textViewName = findViewById(R.id.textViewName);
@@ -55,6 +72,14 @@ public class AlarmActivity extends AppCompatActivity implements View.OnClickList
 
         buttonCancel = findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(this);
+    }
+
+    private void startSound() {
+
+        while (b) {
+            mediaPlayer = MediaPlayer.create(this, Settings.System.DEFAULT_ALARM_ALERT_URI);
+            mediaPlayer.start();
+        }
     }
 
     public void setTripData() {
@@ -85,7 +110,7 @@ public class AlarmActivity extends AppCompatActivity implements View.OnClickList
                 //1- update trip state to canceled
                 updateTripState(getResources().getString(R.string.trip_state_cancel));
                 //2- cancel alarm
-               // tripViewModel.cancelAlarm();
+                 tripViewModel.cancelAlarm(trip);
 
                 //3- finish
                 finish();
@@ -109,7 +134,6 @@ public class AlarmActivity extends AppCompatActivity implements View.OnClickList
     public void updateTripState(String state) {
         trip.setState(state);
 
-        // confelifce replace
         tripViewModel.updateTrip(trip);
 
     }

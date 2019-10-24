@@ -37,16 +37,24 @@ import com.waleed.tripplanner.model.Trip;
 import com.waleed.tripplanner.utils.Validate;
 import com.waleed.tripplanner.viewmodel.TripViewModel;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class TripActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "TripActivity";
+
+    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    Date selectedDate, backDate, selectedTime, backTime;
+    Date currentDate, currentTime;
 
     TripViewModel tripViewModel;
     TextView textViewFrom, textViewTo, textViewDate, textViewTime, textViewDateBack, textViewTimeBack;
@@ -72,7 +80,6 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
     // zero means new trip and 1 means update an old trip
     int mode = 0;
     private Trip oldTrip, newTrip;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     // Set the fields to specify which types of place data to
     // return after the user has made a selection.
@@ -195,6 +202,7 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (item.getItemId()) {
             case R.id.save_menu_item:
+
                 if (getTrip() != null) {
                     if (mode == 0) {
                         tripViewModel.saveTrip(getTrip());
@@ -209,7 +217,9 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
                         } else if (oldTrip.getState().equals(getResources().getString(R.string.trip_state_cancel))
                                 || oldTrip.getState().equals(getResources().getString(R.string.trip_state_done))) {
 
-                            tripViewModel.saveTrip(getTrip());
+                            Trip trip = getTrip();
+                            trip.setState(getResources().getString(R.string.trip_state_up_coming));
+                            tripViewModel.saveTrip(trip);
                         }
                     }
                 }
@@ -296,7 +306,6 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-
 
     private void setTrip(Trip trip) {
 
@@ -414,6 +423,7 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
                         textView.setText(hourOfDay + ":" + minute);
                     }
                 }, mHour, mMinute, false);
+
         timePickerDialog.show();
     }
 
@@ -425,19 +435,15 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
         int mMonth = c.get(Calendar.MONTH);
         int mDay = c.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                        textView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                textView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
 
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(year, monthOfYear, dayOfMonth);
-                        textView.setText(calendar.getTime() + "");
-                        Log.d(TAG, "onDateSet: date=" + calendar.getTime());
-                    }
-                }, mYear, mMonth, mDay);
+
+            }
+        }, mYear, mMonth, mDay);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
@@ -451,7 +457,6 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
     public void showError(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-
 
     //---------------------- validation methods
     public boolean isTripName() {
@@ -529,28 +534,19 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private boolean isTime() {
-        // time
-        if (Validate.isTextNotEmpty(textViewTime.getText().toString())) {
-            newTrip.setTime(textViewTime.getText().toString());
-            textViewTime.setError(null);
-            return true;
-        } else {
-            textViewTime.setError("please select the trip time");
-            return false;
-        }
-    }
-
     private boolean isDate() {
         // date
         if (Validate.isTextNotEmpty(textViewDate.getText().toString())) {
 
             try {
-                Log.d(TAG, "isDate:textViewDate =  " + dateFormat.parse(textViewDate.getText().toString()));
-                Log.d(TAG, "isDate:today's date =  " + Calendar.getInstance().getTime());
 
-                if (dateFormat.parse(textViewDate.getText().toString()).before(Calendar.getInstance().getTime())) {
+                String todayDate = dateFormat.format(Calendar.getInstance().getTime());
 
+                currentDate = dateFormat.parse(todayDate);
+
+                selectedDate = dateFormat.parse(textViewDate.getText().toString());
+
+                if (selectedDate.before(currentDate)) {
 
                     textViewDate.setError("please select a valid date");
                     return false;
@@ -573,32 +569,73 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private boolean isTimeBack() {
-        if (Validate.isTextNotEmpty(textViewTimeBack.getText().toString())) {
-            newTrip.setTimeBack(textViewTimeBack.getText().toString());
-            textViewTimeBack.setError(null);
-            return true;
+    private boolean isTime() {
+
+        if (Validate.isTextNotEmpty(textViewTime.getText().toString())) {
+
+            try {
+                String todayTime = timeFormat.format(Calendar.getInstance().getTime());
+                currentTime = timeFormat.parse(todayTime);
+
+                selectedTime = timeFormat.parse(textViewTime.getText().toString());
+
+                if (selectedDate.compareTo(currentDate) == 0) {
+
+                    if (selectedTime.before(currentTime)) {
+
+                        textViewTime.setError("please select a valid time");
+                        return false;
+                    } else {
+                        newTrip.setTime(textViewTime.getText().toString());
+                        textViewTime.setError(null);
+                        return true;
+                    }
+                } else {
+                    newTrip.setTime(textViewTime.getText().toString());
+                    textViewTime.setError(null);
+                    return true;
+
+                }
+
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+                textViewTime.setError("please select the trip time");
+                return false;
+            }
+
         } else {
-            textViewTimeBack.setError("please select back time");
+            textViewTime.setError("please select the trip time");
             return false;
         }
+
     }
 
     private boolean isDateBack() {
 
-        // date
         if (Validate.isTextNotEmpty(textViewDateBack.getText().toString())) {
 
             try {
-                if (dateFormat.parse(textViewDateBack.getText().toString()).getTime() >= System.currentTimeMillis()) {
-                    newTrip.setDate(textViewDateBack.getText().toString());
-                    textViewDateBack.setError(null);
-                    return true;
 
-                } else {
+                String todayDate = dateFormat.format(Calendar.getInstance().getTime());
+                Date currentDate = dateFormat.parse(todayDate);
+
+                backDate = dateFormat.parse(textViewDateBack.getText().toString());
+
+                if (backDate.before(currentDate)) {
                     textViewDateBack.setError("please select a valid date");
                     return false;
+
+                } else if (backDate.before(selectedDate)) {
+                    textViewDateBack.setError("please select a valid date");
+                    return false;
+
+                } else {
+                    newTrip.setDateBack(textViewDateBack.getText().toString());
+                    textViewDateBack.setError(null);
+                    return true;
                 }
+
             } catch (ParseException e) {
                 e.printStackTrace();
                 textViewDateBack.setError("please select a valid date");
@@ -611,6 +648,54 @@ public class TripActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         }
 
+    }
+
+    private boolean isTimeBack() {
+
+        if (Validate.isTextNotEmpty(textViewTimeBack.getText().toString())) {
+
+            try {
+                String todayTime = timeFormat.format(Calendar.getInstance().getTime());
+                currentTime = timeFormat.parse(todayTime);
+
+                backTime = timeFormat.parse(textViewTimeBack.getText().toString());
+
+                if (backDate.compareTo(currentDate) == 0) {
+
+                    if (backTime.before(currentTime)) {
+
+                        textViewTimeBack.setError("please select a valid time");
+                        return false;
+                    } else {
+                        newTrip.setTimeBack(textViewTimeBack.getText().toString());
+                        textViewTimeBack.setError(null);
+                        return true;
+                    }
+                } else if (backDate.compareTo(selectedDate) == 0) {
+
+                    if (backTime.before(selectedTime)) {
+
+                        textViewTimeBack.setError("please select a valid time");
+                        return false;
+                    } else {
+                        newTrip.setTime(textViewTimeBack.getText().toString());
+                        textViewTimeBack.setError(null);
+                        return true;
+                    }
+                } else {
+                    newTrip.setTime(textViewTimeBack.getText().toString());
+                    textViewTimeBack.setError(null);
+                    return true;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                textViewTimeBack.setError("please select back time");
+                return false;
+            }
+        } else {
+            textViewTimeBack.setError("please select back time");
+            return false;
+        }
     }
 
 
